@@ -7,7 +7,6 @@ import os
 
 import six
 
-from cartopy.io.shapereader import Reader
 from cartopy.io import Downloader
 from cartopy import config
 
@@ -23,6 +22,7 @@ def convective_outlook(fday, ftime, year, month, day, product):
                                                  product))
     format_dict = {'config': config, 'fday': fday, 'ftime': ftime, 'year': year,
                    'month': month, 'day': day, 'product': product}
+
     return outlook_downloader.path(format_dict)
 
 
@@ -56,7 +56,6 @@ class OutlookShpDownloader(Downloader):
                    '{extension}'.format(extension=ext, **format_dict))
 
     def acquire_resource(self, target_path, format_dict):
-
         from zipfile import ZipFile
 
         target_dir = os.path.dirname(target_path)
@@ -88,7 +87,7 @@ class OutlookShpDownloader(Downloader):
 
         """
         default_spec = ('shapefiles', 'convective_outlook', '{year:4d}',
-                        '/day{fday}otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}-shp.zip')
+                        'day{fday}otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{product}.shp')
         co_path_template = os.path.join('{config[data_dir]}', *default_spec)
         pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
                                          *default_spec)
