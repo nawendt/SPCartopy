@@ -8,6 +8,7 @@ import os
 import six
 
 from cartopy.io import Downloader
+from cartopy.io.shapereader import Reader
 from cartopy import config
 
 

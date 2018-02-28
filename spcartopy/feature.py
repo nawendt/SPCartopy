@@ -6,11 +6,10 @@ ax.add_feature().
 
 from cartopy.feature import Feature
 import cartopy.crs
-
 import spcartopy.io.shapereader as shapereader
 
 _SPC_GEOM_CACHE = {}
-
+_SPC_SHP_CRS = cartopy.crs.LambertConformal(central_longitude=0,central_latitude=0,standard_parallels=(33,45))
 
 class ConvectiveOutlookFeature(Feature):
     """
@@ -43,8 +42,7 @@ class ConvectiveOutlookFeature(Feature):
             Keyword arguments to be used when drawing this feature.
 
         """
-        super().__init__(cartopy.crs.PlateCarree(),
-                         **kwargs)
+        super().__init__(_SPC_SHP_CRS, **kwargs)
         self.fday = fday
         self.ftime = ftime
         self.year = year
