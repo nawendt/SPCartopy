@@ -9,7 +9,9 @@ import cartopy.crs
 import spcartopy.io.shapereader as shapereader
 
 _SPC_GEOM_CACHE = {}
-_SPC_SHP_CRS = cartopy.crs.LambertConformal(central_longitude=0,central_latitude=0,standard_parallels=(33,45))
+_SPC_SHP_CRS = cartopy.crs.LambertConformal(central_longitude=0,
+                                            central_latitude=0,
+                                            standard_parallels=(33,45))
 
 class ConvectiveOutlookFeature(Feature):
     """
@@ -64,4 +66,6 @@ class ConvectiveOutlookFeature(Feature):
         else:
             geometries = _SPC_GEOM_CACHE[key]
 
-        return iter(geometries)
+        # Reversed so that cat/prob colors will be plotted with correct geom
+        return reversed(geometries)
+
