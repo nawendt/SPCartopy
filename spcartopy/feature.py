@@ -6,6 +6,7 @@ ax.add_feature().
 
 from cartopy.feature import Feature
 import cartopy.crs
+import spcartopy.colors as spccolors
 import spcartopy.io.shapereader as shapereader
 
 _SPC_GEOM_CACHE = {}
@@ -51,6 +52,24 @@ class ConvectiveOutlookFeature(Feature):
         self.month = month
         self.day = day
         self.product = product
+
+        # Default drawing parameters
+        if self.product == 'hail':
+            self._kwargs.setdefault('facecolor', spccolors.hail_colors)
+            self._kwargs.setdefault('edgecolor', spccolors.hail_colors)
+        elif self.product == 'wind':
+            self._kwargs.setdefault('facecolor', spccolors.wind_colors)
+            self._kwargs.setdefault('edgecolor', spccolors.wind_colors)
+        elif self.product == 'torn':
+            self._kwargs.setdefault('facecolor', spccolors.torn_colors)
+            self._kwargs.setdefault('edgecolor', spccolors.torn_colors)
+        elif self.product == 'cat':
+            self._kwargs.setdefault('facecolor', spccolors.cat_colors)
+            self._kwargs.setdefault('edgecolor', spccolors.cat_colors)
+        elif self.product == 'sighail':
+            self._kwargs.setdefault('hatch', 'x')
+            self._kwargs.setdefault('facecolor', 'none')
+            self._kwargs.setdefault('edgecolor', 'black')
 
     def geometries(self):
         key = (self.fday, self.ftime, self.year, self.month, self.day, self.product)
