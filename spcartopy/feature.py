@@ -4,15 +4,19 @@ ax.add_feature().
 
 """
 
+from datetime import datetime
+
 from cartopy.feature import Feature
 import cartopy.crs
 import spcartopy.colors as spccolors
 import spcartopy.io.shapereader as shapereader
 
+_OUTLOOK_CHANGE_DATE = datetime(2014, 10, 22, 15)
 _SPC_GEOM_CACHE = {}
 _SPC_SHP_CRS = cartopy.crs.LambertConformal(central_longitude=0,
                                             central_latitude=0,
-                                            standard_parallels=(33,45))
+                                            standard_parallels=(33, 45))
+
 
 class ConvectiveOutlookFeature(Feature):
     """
@@ -28,7 +32,7 @@ class ConvectiveOutlookFeature(Feature):
         fday
             The forecast day of the outlook (e.g., 1, 2)
         ftime
-            The forecast time of the outlook (e.g., 1630). Note that and
+            The forecast time of the outlook (e.g., 1630). Note that an
              outlook such as the 0100 UTC outlook will be entered as 100.
         year
             Year of outlook issuance.
@@ -45,13 +49,16 @@ class ConvectiveOutlookFeature(Feature):
             Keyword arguments to be used when drawing this feature.
 
         """
-        super().__init__(_SPC_SHP_CRS, **kwargs)
+        super(ConvectiveOutlookFeature, self).__init__(_SPC_SHP_CRS, **kwargs)
         self.fday = fday
         self.ftime = ftime
         self.year = year
         self.month = month
         self.day = day
         self.product = product
+        self.timestamp = datetime(self.year, self.month, self.day)
+        self._set_outlook_type(self.timestamp)
+
 
         # Default drawing parameters
         if self.product == 'hail':
@@ -64,12 +71,22 @@ class ConvectiveOutlookFeature(Feature):
             self._kwargs.setdefault('facecolor', spccolors.torn_colors)
             self._kwargs.setdefault('edgecolor', spccolors.torn_colors)
         elif self.product == 'cat':
-            self._kwargs.setdefault('facecolor', spccolors.cat_colors)
-            self._kwargs.setdefault('edgecolor', spccolors.cat_colors)
+            if self.outlook_type == 'legacy':
+                self._kwargs.setdefault('facecolor', spccolors.legacy_cat_colors)
+                self._kwargs.setdefault('edgecolor', spccolors.legacy_cat_colors)
+            elif self.outlook_type == 'current':
+                self._kwargs.setdefault('facecolor', spccolors.cat_colors)
+                self._kwargs.setdefault('edgecolor', spccolors.cat_colors)
         elif self.product == 'sighail':
             self._kwargs.setdefault('hatch', 'x')
             self._kwargs.setdefault('facecolor', 'none')
             self._kwargs.setdefault('edgecolor', 'black')
+
+    def _set_outlook_type(self, outlook_date, change_date=_OUTLOOK_CHANGE_DATE):
+        if outlook_date < change_date:
+            self.outlook_type = 'legacy'
+        else:
+            self.outlook_type = 'current'
 
     def geometries(self):
         key = (self.fday, self.ftime, self.year, self.month, self.day, self.product)
@@ -87,4 +104,3 @@ class ConvectiveOutlookFeature(Feature):
 
         # Reversed so that cat/prob colors will be plotted with correct geom
         return reversed(geometries)
-

@@ -48,8 +48,8 @@ class OutlookShpDownloader(Downloader):
                  target_path_template=None,
                  pre_downloaded_path_template='',
                  ):
-        super().__init__(url_template, target_path_template,
-                         pre_downloaded_path_template)
+        super(OutlookShpDownloader, self).__init__(url_template, target_path_template,
+                                                   pre_downloaded_path_template)
 
     def zip_file_contents(self, format_dict):
         for ext in ['.shp', '.dbf', '.shx', '.prj']:

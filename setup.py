@@ -9,5 +9,5 @@ setup(
     author='Nathan Wendt',
     author_email='nawendt@ou.edu',
     description='Add SPC features to cartopy maps',
-    install_requires=['cartopy'],
+    install_requires=['cartopy', 'six'],
 )
