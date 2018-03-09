@@ -59,7 +59,6 @@ class ConvectiveOutlookFeature(Feature):
         self.timestamp = datetime(self.year, self.month, self.day)
         self._set_outlook_type(self.timestamp)
 
-
         # Default drawing parameters
         if self.product == 'hail':
             self._kwargs.setdefault('facecolor', spccolors.hail_colors)
