@@ -76,7 +76,7 @@ class ConvectiveOutlookFeature(Feature):
             elif self.outlook_type == 'current':
                 self._kwargs.setdefault('facecolor', spccolors.cat_colors)
                 self._kwargs.setdefault('edgecolor', spccolors.cat_colors)
-        elif self.product == 'sighail':
+        elif self.product in ['sighail', 'sigtorn', 'sigwind']:
             self._kwargs.setdefault('hatch', 'x')
             self._kwargs.setdefault('facecolor', 'none')
             self._kwargs.setdefault('edgecolor', 'black')
