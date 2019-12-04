@@ -22,9 +22,9 @@ _SPC_SHP_CRS = cartopy.crs.LambertConformal(central_longitude=0,
 
 class ConvectiveOutlookFeature(Feature):
     """
-    An interface to SPC Convective Outlook shapefiles.
+    An interface to SPC Convective Outlook geoJSON files.
 
-    See http://www.spc.noaa.gov/products/outlook/archive
+    See https://www.spc.noaa.gov/products/outlook/archive
 
     """
     def __init__(self, ftime, year, month, day, hazard, **kwargs):
