@@ -32,5 +32,5 @@ setup(
     author='Nathan Wendt',
     author_email='nathan.wendt@noaa.gov',
     description='Add SPC features to cartopy maps',
-    install_requires=['cartopy', 'fiona', 'matplotlib', 'six'],
+    install_requires=['cartopy', 'fiona', 'matplotlib'],
 )
