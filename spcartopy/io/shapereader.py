@@ -7,7 +7,7 @@ import os
 import re
 
 from cartopy.io import Downloader
-from cartopy.io.shapereader import Reader
+from cartopy.io.shapereader import FionaReader, FionaRecord
 from cartopy import config
 
 
@@ -22,6 +22,59 @@ def SPC(fday, ftime, year, month, day, hazard, product):
                    'month': month, 'day': day, 'hazard': hazard, 'product': product}
 
     return outlook_downloader.path(format_dict)
+
+
+class SPCReader(FionaReader):
+    """
+    Specializes :class:`cartopy.io.shapereader.FionaReader` to properly read and
+    filter SPC geoJSON files.
+
+    """
+
+    def __init__(self, filename, bbox=None):
+        super(SPCReader, self).__init__(filename, bbox)
+
+    def geometries(self, filter=None):
+        """
+        Overrides :meth:`~FionaReader.geometries` so that specified geomtries
+        can be filtered based on record attributes.
+
+        Parameters
+        ----------
+        filter
+        A dictionary containing key:value pairs used to filter geometries.
+
+        """
+        if filter is None:
+            filter = {}
+
+        for item in self._data:
+            if any([item[key] == value for key, value in filter.items()]):
+                continue
+            else:
+                yield item['geometry']
+
+    def records(self, filter=None):
+        """
+        Overrides :meth:`~FionaReader.records` so that specified records
+        can be filtered based on record attributes.
+
+        Parameters
+        ----------
+        filter
+        A dictionary containing key:value pairs used to filter records.
+
+        """
+        if filter is None:
+            filter = {}
+            
+        for item in self._data:
+            if any([item[key] == value for key, value in filter.items()]):
+                continue
+            else:
+                yield FionaRecord(item['geometry'],
+                                {key: value for key, value in
+                                item.items() if key != 'geometry'})
 
 
 class ConvectiveOutlookDownloader(Downloader):
@@ -80,7 +133,7 @@ class Day1OutlookDownloader(ConvectiveOutlookDownloader):
 
         """
         default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
-                        'day1otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard}.geojson')
+                        'day1otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard:s}.geojson')
         co_path_template = os.path.join('{config[data_dir]}', *default_spec)
         pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
                                          *default_spec)
@@ -117,7 +170,7 @@ class Day2OutlookDownloader(ConvectiveOutlookDownloader):
 
         """
         default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
-                        'day2otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard}.geojson')
+                        'day2otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard:s}.geojson')
         co_path_template = os.path.join('{config[data_dir]}', *default_spec)
         pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
                                          *default_spec)
@@ -154,7 +207,7 @@ class Day3OutlookDownloader(ConvectiveOutlookDownloader):
 
         """
         default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
-                        'day3otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard}.geojson')
+                        'day3otlk_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard:s}.geojson')
         co_path_template = os.path.join('{config[data_dir]}', *default_spec)
         pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
                                          *default_spec)
@@ -169,7 +222,7 @@ class Day4OutlookDownloader(ConvectiveOutlookDownloader):
     forecast geoJSON files to the defined location (typically user configurable).
 
     The keys which should be passed through when using the ``format_dict``
-    are typically  ``ftime``, ``year``, ``month``, ``day`` and ``hazard``.
+    are typically ``year``, ``month``, ``day``.
 
     """
 
@@ -206,12 +259,12 @@ class Day5OutlookDownloader(ConvectiveOutlookDownloader):
     forecast geoJSON files to the defined location (typically user configurable).
 
     The keys which should be passed through when using the ``format_dict``
-    are typically  ``ftime``, ``year``, ``month``, ``day`` and ``hazard``.
+    are typically ``year``, ``month``, ``day``.
 
     """
 
     _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/day4-8/archive/{year:4d}'
-                         '/day5prob_{year:5d}{month:02d}{day:02d}.lyr.geojson')
+                         '/day5prob_{year:4d}{month:02d}{day:02d}.lyr.geojson')
 
     def __init__(self,
                  url_template=_SPC_URL_TEMPLATE,
@@ -243,12 +296,12 @@ class Day6OutlookDownloader(ConvectiveOutlookDownloader):
     forecast geoJSON files to the defined location (typically user configurable).
 
     The keys which should be passed through when using the ``format_dict``
-    are typically  ``ftime``, ``year``, ``month``, ``day`` and ``hazard``.
+    are typically ``year``, ``month``, ``day``.
 
     """
 
     _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/day4-8/archive/{year:4d}'
-                         '/day6prob_{year:5d}{month:02d}{day:02d}.lyr.geojson')
+                         '/day6prob_{year:4d}{month:02d}{day:02d}.lyr.geojson')
 
     def __init__(self,
                  url_template=_SPC_URL_TEMPLATE,
@@ -280,12 +333,12 @@ class Day7OutlookDownloader(ConvectiveOutlookDownloader):
     forecast geoJSON files to the defined location (typically user configurable).
 
     The keys which should be passed through when using the ``format_dict``
-    are typically  ``ftime``, ``year``, ``month``, ``day`` and ``hazard``.
+    are typically ``year``, ``month``, ``day``.
 
     """
 
     _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/day4-8/archive/{year:4d}'
-                         '/day7prob_{year:5d}{month:02d}{day:02d}.lyr.geojson')
+                         '/day7prob_{year:4d}{month:02d}{day:02d}.lyr.geojson')
 
     def __init__(self,
                  url_template=_SPC_URL_TEMPLATE,
@@ -317,12 +370,12 @@ class Day8OutlookDownloader(ConvectiveOutlookDownloader):
     forecast geoJSON files to the defined location (typically user configurable).
 
     The keys which should be passed through when using the ``format_dict``
-    are typically  ``ftime``, ``year``, ``month``, ``day`` and ``hazard``.
+    are typically ``year``, ``month``, ``day``.
 
     """
 
     _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/day4-8/archive/{year:4d}'
-                         '/day8prob_{year:5d}{month:02d}{day:02d}.lyr.geojson')
+                         '/day8prob_{year:4d}{month:02d}{day:02d}.lyr.geojson')
 
     def __init__(self,
                  url_template=_SPC_URL_TEMPLATE,

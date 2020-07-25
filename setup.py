@@ -25,7 +25,7 @@ def find_package_tree(root_path, root_package):
 
 setup(
     name='SPCartopy',
-    version='0.1.0',
+    version='0.9.0',
     packages=find_package_tree('spcartopy', 'spcartopy'),
     url='https://github.com/nawendt/SPCartopy',
     license='BSD-3',

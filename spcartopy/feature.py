@@ -9,8 +9,6 @@ import re
 
 from cartopy.feature import Feature
 import cartopy.crs
-import spcartopy.colors as spccolors
-import fiona
 import spcartopy.io.shapereader as shapereader
 
 _SPC_GEOM_CACHE = {}
@@ -46,23 +44,21 @@ class ConvectiveOutlookFeature(Feature):
         self.edgecolors = []
         self.short_labels = []
         self.long_labels = []
-        self.hatches = []
         
         for geom, rec in zip(geometries, records):
-            for polygon in geom:
+            for _polygon in geom:
                 self.facecolors.append(rec.attributes['fill'])
                 self.edgecolors.append(rec.attributes['stroke'])
                 self.short_labels.append(rec.attributes['LABEL'])
                 self.long_labels.append(rec.attributes['LABEL2'])
+        
+        if self.hazard is not None and re.search('^sig', self.hazard):
+            self._kwargs['hatch'] = self._kwargs.get('hatch', 'SS')
+            self._kwargs['facecolor'] = self._kwargs.get('facecolor', 'none')
+        else:
+            self._kwargs['facecolor'] = self._kwargs.get('facecolor', self.facecolors)
 
         self._kwargs['edgecolor'] = self._kwargs.get('edgecolor', self.edgecolors)
-        self._kwargs['facecolor'] = self._kwargs.get('facecolor', self.facecolors)
-        
-        if self.hazard is not None:
-            if re.search('^(sig|prob)', self.hazard):
-                self._kwargs['hatch'] = self._kwargs.get('hatch', 'SS')
-                self._kwargs['facecolor'] = self._kwargs.get('facecolor', 'none')
-                self.hatches.append('SS')        
 
     def records(self):
         key = (self.ftime, self.year, self.month, self.day, self.hazard)
@@ -74,7 +70,10 @@ class ConvectiveOutlookFeature(Feature):
                                    day=self.day,
                                    hazard=self.hazard,
                                    product=self.product)
-            records = tuple(shapereader.Reader(path).records())
+            if self.hazard in ['hail', 'wind', 'torn']:
+                records = tuple(shapereader.SPCReader(path).records(filter={'LABEL': 'SIGN'}))
+            else:
+                records = tuple(shapereader.SPCReader(path).records())
             _SPC_RECORD_CACHE[key] = records
         else:
             records = _SPC_RECORD_CACHE[key]
@@ -91,7 +90,10 @@ class ConvectiveOutlookFeature(Feature):
                                    day=self.day,
                                    hazard=self.hazard,
                                    product=self.product)
-            geometries = tuple(shapereader.Reader(path).geometries())
+            if self.hazard in ['hail', 'wind', 'torn']:
+                geometries = tuple(shapereader.SPCReader(path).geometries(filter={'LABEL': 'SIGN'}))
+            else:
+                geometries = tuple(shapereader.SPCReader(path).geometries())
             _SPC_GEOM_CACHE[key] = geometries
         else:
             geometries = _SPC_GEOM_CACHE[key]
