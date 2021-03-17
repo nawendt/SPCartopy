@@ -4,14 +4,13 @@ This module contains custom extensions to download and process SPC geoJSON files
 """
 
 import os
-import re
 
 from cartopy.io import Downloader
 from cartopy.io.shapereader import FionaReader, FionaRecord
 from cartopy import config
 
 
-def SPC(fday, ftime, year, month, day, hazard, product):
+def SPCC(fday, ftime, year, month, day, hazard, product):
     """
     Return the path to the requested SPC Convective Outlook geoJSON.
 
@@ -19,7 +18,22 @@ def SPC(fday, ftime, year, month, day, hazard, product):
     outlook_downloader = Downloader.from_config(('geoJSON', 'Day{fday:1d}Outlook'.format(fday=fday),
                                                  fday, ftime, year, month, day, hazard, product))
     format_dict = {'config': config, 'ftime': ftime, 'year': year,
-                   'month': month, 'day': day, 'hazard': hazard, 'product': product}
+                   'month': month, 'day': day, 'hazard': hazard,
+                   'product': product}
+
+    return outlook_downloader.path(format_dict)
+
+
+def SPCF(fday, ftime, year, month, day, hazard, product):
+    """
+    Return the path to the requested SPC Fire Outlook geoJSON.
+
+    """
+    outlook_downloader = Downloader.from_config(('geoJSON', 'Day{fday:1d}Fire'.format(fday=fday),
+                                                 fday, ftime, year, month, day, hazard, product))
+    format_dict = {'config': config, 'ftime': ftime, 'year': year,
+                   'month': month, 'day': day, 'hazard': hazard,
+                   'product': product}
 
     return outlook_downloader.path(format_dict)
 
@@ -67,14 +81,14 @@ class SPCReader(FionaReader):
         """
         if filter is None:
             filter = {}
-            
+
         for item in self._data:
             if any([item[key] == value for key, value in filter.items()]):
                 continue
             else:
                 yield FionaRecord(item['geometry'],
-                                {key: value for key, value in
-                                item.items() if key != 'geometry'})
+                                  {key: value for key, value in
+                                  item.items() if key != 'geometry'})
 
 
 class ConvectiveOutlookDownloader(Downloader):
@@ -90,7 +104,37 @@ class ConvectiveOutlookDownloader(Downloader):
                  pre_downloaded_path_template,
                  ):
         super(ConvectiveOutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                          pre_downloaded_path_template)
+
+    def acquire_resource(self, target_path, format_dict):
+        target_dir = os.path.dirname(target_path)
+        if not os.path.isdir(target_dir):
+            os.makedirs(target_dir)
+
+        url = self.url(format_dict)
+
+        geoJSON_online = self._urlopen(url)
+
+        with open(target_path, 'wb') as fh:
+            fh.write(geoJSON_online.read())
+
+        return target_path
+
+
+class FireOutlookDownloader(Downloader):
+    """
+    Base class that extends :class:`cartopy.io.Downloader` for SPC fire outlooks.
+
+    """
+    FORMAT_KEYS = ('config', 'hazard', 'ftime', 'year', 'month', 'day', 'product')
+
+    def __init__(self,
+                 url_template,
+                 target_path_template,
+                 pre_downloaded_path_template,
+                 ):
+        super(FireOutlookDownloader, self).__init__(url_template, target_path_template,
+                                                          pre_downloaded_path_template)
 
     def acquire_resource(self, target_path, format_dict):
         target_dir = os.path.dirname(target_path)
@@ -125,7 +169,7 @@ class Day1OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day1OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
     @staticmethod
     def default_downloader():
         """
@@ -139,7 +183,7 @@ class Day1OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day1OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
 
 class Day2OutlookDownloader(ConvectiveOutlookDownloader):
@@ -161,7 +205,7 @@ class Day2OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day2OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
 
     @staticmethod
     def default_downloader():
@@ -176,7 +220,7 @@ class Day2OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day2OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
 
 class Day3OutlookDownloader(ConvectiveOutlookDownloader):
@@ -198,7 +242,7 @@ class Day3OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day3OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
 
     @staticmethod
     def default_downloader():
@@ -213,7 +257,7 @@ class Day3OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day3OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
 
 class Day4OutlookDownloader(ConvectiveOutlookDownloader):
@@ -235,7 +279,7 @@ class Day4OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day4OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
 
     @staticmethod
     def default_downloader():
@@ -250,7 +294,7 @@ class Day4OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day4OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
 
 class Day5OutlookDownloader(ConvectiveOutlookDownloader):
@@ -272,7 +316,7 @@ class Day5OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day5OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
 
     @staticmethod
     def default_downloader():
@@ -287,7 +331,7 @@ class Day5OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day5OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
 
 class Day6OutlookDownloader(ConvectiveOutlookDownloader):
@@ -309,7 +353,7 @@ class Day6OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day6OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
 
     @staticmethod
     def default_downloader():
@@ -324,7 +368,7 @@ class Day6OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day6OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
 
 class Day7OutlookDownloader(ConvectiveOutlookDownloader):
@@ -346,7 +390,7 @@ class Day7OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day7OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
 
     @staticmethod
     def default_downloader():
@@ -361,7 +405,7 @@ class Day7OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day7OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
 
 class Day8OutlookDownloader(ConvectiveOutlookDownloader):
@@ -383,7 +427,7 @@ class Day8OutlookDownloader(ConvectiveOutlookDownloader):
                  pre_downloaded_path_template='',
                  ):
         super(Day8OutlookDownloader, self).__init__(url_template, target_path_template,
-                                                       pre_downloaded_path_template)
+                                                    pre_downloaded_path_template)
 
     @staticmethod
     def default_downloader():
@@ -398,9 +442,288 @@ class Day8OutlookDownloader(ConvectiveOutlookDownloader):
                                          *default_spec)
 
         return Day8OutlookDownloader(target_path_template=co_path_template,
-                                        pre_downloaded_path_template=pre_path_template)
+                                     pre_downloaded_path_template=pre_path_template)
 
-                                        
+
+class Day1FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 1 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``ftime``, ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/fire_wx/{year:4d}'
+                         '/day1fw_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day1FireDownloader, self).__init__(url_template, target_path_template,
+                                                    pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day1fw_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day1FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
+
+class Day2FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 2 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``ftime``, ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/fire_wx/{year:4d}'
+                         '/day2fw_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day2FireDownloader, self).__init__(url_template, target_path_template,
+                                                 pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day2fw_{year:4d}{month:02d}{day:02d}_{ftime:04d}_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day2FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
+
+class Day3FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 3 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/fire_wx/{year:4d}'
+                         '/day3fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day3FireDownloader, self).__init__(url_template, target_path_template,
+                                                 pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day3fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day3FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
+
+class Day4FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 4 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/fire_wx/{year:4d}'
+                         '/day4fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day4FireDownloader, self).__init__(url_template, target_path_template,
+                                                 pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day4fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day4FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
+
+class Day5FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 5 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/fire_wx/{year:4d}'
+                         '/day5fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day5FireDownloader, self).__init__(url_template, target_path_template,
+                                                 pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day5fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day5FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
+
+class Day6FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 6 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/fire_wx/{year:4d}'
+                         '/day6fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day6FireDownloader, self).__init__(url_template, target_path_template,
+                                                 pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day6fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day6FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
+
+class Day7FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 7 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/fire_wx/{year:4d}'
+                         '/day7fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day7FireDownloader, self).__init__(url_template, target_path_template,
+                                                 pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day7fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day7FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
+
+class Day8FireDownloader(FireOutlookDownloader):
+    """
+    Specializes :class:`spcartopy.io.FireOutlookDownloader` to download the Day 8 SPC 
+    forecast geoJSON files to the defined location (typically user configurable).
+
+    The keys which should be passed through when using the ``format_dict``
+    are typically  ``year``, ``month``, ``day`` and ``hazard``.
+
+    """
+    _SPC_URL_TEMPLATE = ('https://www.spc.noaa.gov/products/exper/fire_wx/{year:4d}'
+                         '/day8fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.lyr.geojson')
+
+    def __init__(self,
+                 url_template=_SPC_URL_TEMPLATE,
+                 target_path_template=None,
+                 pre_downloaded_path_template='',
+                 ):
+        super(Day8FireDownloader, self).__init__(url_template, target_path_template,
+                                                 pre_downloaded_path_template)
+    @staticmethod
+    def default_downloader():
+        """
+        Return a generic, standard, Day1FireDownloader instance.
+
+        """
+        default_spec = ('geoJSON', 'SPC', '{product}', '{year:4d}',
+                        'day8fw_{year:4d}{month:02d}{day:02d}_1200_{hazard:s}.geojson')
+        co_path_template = os.path.join('{config[data_dir]}', *default_spec)
+        pre_path_template = os.path.join('{config[pre_existing_data_dir]}',
+                                         *default_spec)
+
+        return Day8FireDownloader(target_path_template=co_path_template,
+                                  pre_downloaded_path_template=pre_path_template)
+
 # Add a generic SPC Convective Outlook geoJSON downloader to the config dictionary's
 # 'downloaders' section.
 _day1_co_key = ('geoJSON', 'Day1Outlook')
@@ -412,6 +735,15 @@ _day6_co_key = ('geoJSON', 'Day6Outlook')
 _day7_co_key = ('geoJSON', 'Day7Outlook')
 _day8_co_key = ('geoJSON', 'Day8Outlook')
 
+_day1_fw_key = ('geoJSON', 'Day1Fire')
+_day2_fw_key = ('geoJSON', 'Day2Fire')
+_day3_fw_key = ('geoJSON', 'Day3Fire')
+_day4_fw_key = ('geoJSON', 'Day4Fire')
+_day5_fw_key = ('geoJSON', 'Day5Fire')
+_day6_fw_key = ('geoJSON', 'Day6Fire')
+_day7_fw_key = ('geoJSON', 'Day7Fire')
+_day8_fw_key = ('geoJSON', 'Day8Fire')
+
 config['downloaders'].setdefault(_day1_co_key, Day1OutlookDownloader.default_downloader())
 config['downloaders'].setdefault(_day2_co_key, Day2OutlookDownloader.default_downloader())
 config['downloaders'].setdefault(_day3_co_key, Day3OutlookDownloader.default_downloader())
@@ -420,3 +752,12 @@ config['downloaders'].setdefault(_day5_co_key, Day5OutlookDownloader.default_dow
 config['downloaders'].setdefault(_day6_co_key, Day6OutlookDownloader.default_downloader())
 config['downloaders'].setdefault(_day7_co_key, Day7OutlookDownloader.default_downloader())
 config['downloaders'].setdefault(_day8_co_key, Day8OutlookDownloader.default_downloader())
+
+config['downloaders'].setdefault(_day1_fw_key, Day1FireDownloader.default_downloader())
+config['downloaders'].setdefault(_day2_fw_key, Day2FireDownloader.default_downloader())
+config['downloaders'].setdefault(_day3_fw_key, Day3FireDownloader.default_downloader())
+config['downloaders'].setdefault(_day4_fw_key, Day4FireDownloader.default_downloader())
+config['downloaders'].setdefault(_day5_fw_key, Day5FireDownloader.default_downloader())
+config['downloaders'].setdefault(_day6_fw_key, Day6FireDownloader.default_downloader())
+config['downloaders'].setdefault(_day7_fw_key, Day7FireDownloader.default_downloader())
+config['downloaders'].setdefault(_day8_fw_key, Day8FireDownloader.default_downloader())

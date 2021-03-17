@@ -1,6 +1,7 @@
 from setuptools import convert_path, setup
 import os
 
+
 def find_package_tree(root_path, root_package):
     """
     Return the package and all its sub-packages.
@@ -23,9 +24,10 @@ def find_package_tree(root_path, root_package):
                              for dir_name in dir_names])
     return packages
 
+
 setup(
     name='SPCartopy',
-    version='0.9.0',
+    version='1.0.0',
     packages=find_package_tree('spcartopy', 'spcartopy'),
     url='https://github.com/nawendt/SPCartopy',
     license='BSD-3',
