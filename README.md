@@ -2,12 +2,14 @@
 Plot SPC products using simple cartopy and matplotlib syntax
 
 #### What is SPCartopy?
-SPCartopy was created to make retriving and plotting certain Storm Prediction Center ([SPC](https://www.spc.noaa.gov)) products easy. The package uses the Python map plotting package [cartopy](https://scitools.org.uk/cartopy/docs/latest) as a foundation and extends some of its classes. Convective and fire weather outlooks are the products currently supported.
+SPCartopy was created to make retriving and plotting certain Storm Prediction Center ([SPC](https://www.spc.noaa.gov)) products easy. The package uses the Python map plotting package [cartopy](https://scitools.org.uk/cartopy/docs/latest) as a foundation and extends some of its classes. Convective/fire weather outlooks and MDs are the products currently supported.
 
 #### How do I install it?
 First, you need python. The easiest way to get it is to use something like [miniconda](https://docs.conda.io/en/latest/miniconda.html). Once you have python, you need to have cartopy, fiona, and matplotlib installed. Then, just download this repository, use your terminal to navigate to the package folder, and run the following command:
 ```shell
 python setup.py install
+# or
+pip install .
 ```
 
 #### How do I use SPCartopy?

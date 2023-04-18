@@ -1,0 +1,4 @@
+cartopy
+fiona
+matplotlib
+shapely >= 1.8
