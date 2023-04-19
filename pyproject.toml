@@ -1,0 +1,69 @@
+[project]
+name = 'SPCartopy'
+description = 'Add SPC products to cartopy maps.'
+authors = [
+    {name = 'Nathan Wendt', email = 'nathan.wendt@noaa.gov'},
+]
+readme = 'README.md'
+license = {file = 'LICENSE'}
+dynamic = ['version']
+dependencies = [
+    'cartopy',
+    'fiona',
+    'matplotlib',
+    'shapely >= 1.8'
+]
+
+[project.optional-dependencies]
+lint = [
+    'flake8',
+    'pycodestyle',
+    'pyflakes',
+    'flake8-bugbear',
+    'flake8-builtins',
+    'flake8-comprehensions',
+    'flake8-continuation',
+    'flake8-copyright',
+    'flake8-isort',
+    'isort',
+    'flake8-mutable',
+    'flake8-pie',
+    'flake8-print',
+    'flake8-quotes',
+    'flake8-requirements',
+    'flake8-simplify',
+    'flake8-docstrings',
+    'pep8-naming',
+    'pydocstyle',
+]
+
+test = [
+    'pytest',
+    'pytest-mpl'
+]
+
+[build-system]
+requires = ['setuptools']
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+homepage = 'https://github.com/nawendt/SPCartopy'
+repository = 'https://github.com/nawendt/SPCartopy'
+
+[tool.isort]
+line_length = 95
+known_first_party = ['spcartopy']
+force_single_line = false
+reverse_relative = true
+use_parentheses = true
+force_sort_within_sections = true
+order_by_type = false
+sort_relative_in_force_sorted_sections = true
+combine_as_imports = true
+combine_star = true
+
+[tool.setuptools.dynamic]
+version = {attr = 'spcartopy.__version__'}
+
+[tool.setuptools.packages.find]
+where = ['src']
