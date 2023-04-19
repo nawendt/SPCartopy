@@ -5,12 +5,21 @@ name: Build and test package
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow}}-${{ github.head_ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       fail-fast: false
       matrix:
@@ -21,13 +30,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: mamba-org/provision-with-micromamba@main
       with:
-        python-version: ${{ matrix.python-version }}
+        environment-file: false
+        environment-name: CI
+        extra-specs: python=${{ matrix.python-version }}
+        channels: conda-forge
+        cache-env: true
+        cache-env-key: mamba-${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('ci/*') }}
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install -r ci/test_requirements.txt
-        python -m pip install -r ci/requirements.txt
-    - name: Test with pytest
+      run: micromamba install --quiet --yes --file ci/test_requirements.txt --file ci/requirements.txt
+    - name: Install package
+      run: python -m pip install --no-deps .
+    - name: Test package
       run: pytest
