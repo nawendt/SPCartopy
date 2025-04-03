@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Nathan Wendt.
+# Copyright (c) 2025 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """SPC `Feature` instances."""
@@ -34,21 +34,20 @@ class ConvectiveOutlookFeature(Feature):
         self.hazard = hazard
         self.product = 'convective_outlook'
         self.timestamp = datetime(self.year, self.month, self.day)
-        self._set_plot_properties(self.geometries(), self.records())
+        self._set_plot_properties(self.records())
 
-    def _set_plot_properties(self, geometries, records):
+    def _set_plot_properties(self, records):
         """Set basic cartopy plotting keyword arguments for `ConvectiveOutlookFeature`."""
         self.facecolors = []
         self.edgecolors = []
         self.short_labels = []
         self.long_labels = []
 
-        for geom, rec in zip(geometries, records):
-            for _polygon in geom.geoms:
-                self.facecolors.append(rec.attributes['fill'])
-                self.edgecolors.append(rec.attributes['stroke'])
-                self.short_labels.append(rec.attributes['LABEL'])
-                self.long_labels.append(rec.attributes['LABEL2'])
+        for rec in records:
+            self.facecolors.append(rec.attributes['fill'])
+            self.edgecolors.append(rec.attributes['stroke'])
+            self.short_labels.append(rec.attributes['LABEL'])
+            self.long_labels.append(rec.attributes['LABEL2'])
 
         if self.hazard is not None and re.search('^sig', self.hazard):
             self._kwargs['hatch'] = self._kwargs.get('hatch', 'SS')
@@ -62,7 +61,7 @@ class ConvectiveOutlookFeature(Feature):
         """Parse records from SPC geoJSONs."""
         key = (self.ftime, self.year, self.month, self.day, self.hazard)
         if key not in _SPC_RECORD_CACHE:
-            path = shapereader.SPCC(fday=self.fday,
+            path = shapereader.spc_convective(fday=self.fday,
                                     ftime=self.ftime,
                                     year=self.year,
                                     month=self.month,
@@ -85,7 +84,7 @@ class ConvectiveOutlookFeature(Feature):
         """Parse geometries from SPC convective geoJSONs."""
         key = (self.ftime, self.year, self.month, self.day, self.hazard)
         if key not in _SPC_GEOM_CACHE:
-            path = shapereader.SPCC(fday=self.fday,
+            path = shapereader.spc_convective(fday=self.fday,
                                     ftime=self.ftime,
                                     year=self.year,
                                     month=self.month,
@@ -121,24 +120,23 @@ class FireOutlookFeature(Feature):
         self.hazard = hazard
         self.product = 'fire_outlook'
         self.timestamp = datetime(self.year, self.month, self.day)
-        self._set_plot_properties(self.geometries(), self.records())
+        self._set_plot_properties(self.records())
 
-    def _set_plot_properties(self, geometries, records):
+    def _set_plot_properties(self, records):
         """Set basic cartopy plotting keyword arguments for `FireOutlookFeature`."""
         self.facecolors = []
         self.edgecolors = []
         self.short_labels = []
         self.long_labels = []
 
-        for geom, rec in zip(geometries, records):
-            for _polygon in geom.geoms:
-                if self.hazard in ['dryt', 'drytcat']:
-                    self.facecolors.append('none')
-                else:
-                    self.facecolors.append(rec.attributes['fill'])
-                self.edgecolors.append(rec.attributes['stroke'])
-                self.short_labels.append(rec.attributes['LABEL'])
-                self.long_labels.append(rec.attributes['LABEL2'])
+        for rec in records:
+            if self.hazard in ['dryt', 'drytcat']:
+                self.facecolors.append('none')
+            else:
+                self.facecolors.append(rec.attributes['fill'])
+            self.edgecolors.append(rec.attributes['stroke'])
+            self.short_labels.append(rec.attributes['LABEL'])
+            self.long_labels.append(rec.attributes['LABEL2'])
 
         if self.hazard is not None and self.hazard in ['dryt', 'drytcat']:
             self._kwargs['hatch'] = self._kwargs.get('hatch', 'xx')
@@ -149,7 +147,7 @@ class FireOutlookFeature(Feature):
         """Parse records from SPC fire geoJSONs."""
         key = (self.ftime, self.year, self.month, self.day, self.hazard)
         if key not in _SPC_RECORD_CACHE:
-            path = shapereader.SPCF(fday=self.fday,
+            path = shapereader.spc_fire(fday=self.fday,
                                     ftime=self.ftime,
                                     year=self.year,
                                     month=self.month,
@@ -168,7 +166,7 @@ class FireOutlookFeature(Feature):
         """Parse geometries from SPC fire geoJSONs."""
         key = (self.ftime, self.year, self.month, self.day, self.hazard)
         if key not in _SPC_GEOM_CACHE:
-            path = shapereader.SPCF(fday=self.fday,
+            path = shapereader.spc_fire(fday=self.fday,
                                     ftime=self.ftime,
                                     year=self.year,
                                     month=self.month,
@@ -197,7 +195,7 @@ class MDFeature(Feature):
         key = (self.year, self.number)
         geometries = []
         if key not in _SPC_GEOM_CACHE:
-            path = textreader.MD(year=self.year, number=self.number)
+            path = textreader.spc_md(year=self.year, number=self.number)
             geometries = tuple(FionaReader(path).geometries())
             _SPC_GEOM_CACHE[key] = geometries
         else:

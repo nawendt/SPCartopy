@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Nathan Wendt.
+# Copyright (c) 2025 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Decoding tools."""
@@ -25,10 +25,7 @@ def decode_coords(coord_string):
 
     lat = int(slat) / 100
 
-    if int(slon) < 3000:
-        lon = -int(f'1{slon}') / 100
-    else:
-        lon = -int(slon) / 100
+    lon = -int(f'1{slon}') / 100 if int(slon) < 3000 else -int(slon) / 100
 
     return (lon, lat)
 

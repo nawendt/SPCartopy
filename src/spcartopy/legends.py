@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Nathan Wendt.
+# Copyright (c) 2025 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Helper function for generating legends for SPC outlook plots."""
@@ -8,7 +8,7 @@ from matplotlib.patches import Rectangle
 from spcartopy.colors import Outlooks
 
 
-def convectiveAllHazards():
+def convective_all_hazards():
     """Legend for all hazards probabilistic outlook."""
     handles = []
     labels = []
@@ -24,7 +24,7 @@ def convectiveAllHazards():
     return (handles, labels)
 
 
-def convectiveCategorical():
+def convective_categorical():
     """Legend for categorical convective outlook."""
     handles = []
     labels = []
@@ -36,7 +36,7 @@ def convectiveCategorical():
     return (handles, labels)
 
 
-def convectiveExtended():
+def convective_extended():
     """Legend for extended convective outlook."""
     handles = []
     labels = []
@@ -48,7 +48,7 @@ def convectiveExtended():
     return (handles, labels)
 
 
-def convectiveHail():
+def convective_hail():
     """Legend for probabilistic hail outlook."""
     handles = []
     labels = []
@@ -64,7 +64,7 @@ def convectiveHail():
     return (handles, labels)
 
 
-def convectiveTornado():
+def convective_tornado():
     """Legend for probabilistic tornado outlook."""
     handles = []
     labels = []
@@ -80,7 +80,7 @@ def convectiveTornado():
     return (handles, labels)
 
 
-def convectiveWind():
+def convective_wind():
     """Legend for probabilistic wind outlook."""
     handles = []
     labels = []
@@ -96,7 +96,7 @@ def convectiveWind():
     return (handles, labels)
 
 
-def fireCategorical():
+def fire_categorical():
     """Legend for categorical fire outlook."""
     handles = []
     labels = []
@@ -112,7 +112,7 @@ def fireCategorical():
     return (handles, labels)
 
 
-def extendedFireCategorical():
+def extended_fire_categorical():
     """Legend for extended fire outlook."""
     handles = []
     labels = []
@@ -124,7 +124,7 @@ def extendedFireCategorical():
     return (handles, labels)
 
 
-def extendedFireProbability():
+def extended_fire_probability():
     """Legend for fire probabilistic outlook."""
     handles = []
     labels = []

@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Nathan Wendt.
+# Copyright (c) 2025 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Custom extensions to download and process SPC text files."""
@@ -12,7 +12,7 @@ from cartopy.io import Downloader
 from spcartopy.io.decode import mcd_to_geojson
 
 
-def MD(year, number):
+def spc_md(year, number):
     """Return the path to the requested SPC mesoscale discussion geoJSON."""
     md_downloader = Downloader.from_config(
         ('geoJSON', 'MD', year, number)

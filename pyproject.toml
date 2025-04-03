@@ -7,8 +7,9 @@ authors = [
 readme = 'README.md'
 license = {file = 'LICENSE'}
 dynamic = ['version']
+requires-python = '>=3.10'
 dependencies = [
-    'cartopy',
+    'cartopy >= 0.23',
     'fiona',
     'matplotlib',
     'shapely >= 1.8'
@@ -17,24 +18,15 @@ dependencies = [
 [project.optional-dependencies]
 lint = [
     'flake8',
+    'ruff',
     'pycodestyle',
     'pyflakes',
-    'flake8-bugbear',
-    'flake8-builtins',
-    'flake8-comprehensions',
     'flake8-continuation',
     'flake8-copyright',
     'flake8-isort',
     'isort',
-    'flake8-mutable',
-    'flake8-pie',
-    'flake8-print',
-    'flake8-quotes',
     'flake8-requirements',
-    'flake8-simplify',
-    'flake8-docstrings',
-    'pep8-naming',
-    'pydocstyle',
+    'pydocstyle'
 ]
 
 test = [
@@ -61,6 +53,52 @@ order_by_type = false
 sort_relative_in_force_sorted_sections = true
 combine_as_imports = true
 combine_star = true
+
+[tool.pytest.ini_options]
+norecursedirs = 'build'
+mpl-results-path = 'test_output'
+mpl-default-style = 'default'
+mpl-default-backend = 'agg'
+xfail_strict = false
+filterwarnings = [
+    "error",
+    'ignore:hatch must consist of a string of',
+]
+
+[tool.ruff]
+line-length = 95
+extend-exclude = ['tutorials']
+
+[tool.ruff.lint]
+select = ['A', 'B', 'C', 'CPY001', 'D', 'E', 'E226', 'F', 'G', 'I', 'N', 'NPY', 'Q', 'R', 'S', 'SIM', 'T', 'U', 'W']
+ignore = ['F405', 'I001', 'RET504', 'RET505', 'RET506', 'RET507', 'RUF100']
+preview = true
+explicit-preview-rules = true
+
+[tool.ruff.lint.per-file-ignores]
+'src/spcartopy/__init__.py' = ['F401']
+
+[tool.ruff.lint.flake8-copyright]
+notice-rgx = '(?i)Copyright\s+(\(C\)\s+)?\d{4}'
+author = 'Nathan Wendt'
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = 'single'
+multiline-quotes = 'double'
+
+[tool.ruff.lint.isort]
+known-first-party = ['spcartopy']
+force-single-line = false
+relative-imports-order = 'closest-to-furthest'
+force-sort-within-sections = true
+order-by-type = false
+combine-as-imports = true
+
+[tool.ruff.lint.mccabe]
+max-complexity = 61
+
+[tool.ruff.lint.pydocstyle]
+convention = 'numpy'
 
 [tool.setuptools.dynamic]
 version = {attr = 'spcartopy.__version__'}

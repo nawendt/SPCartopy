@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Nathan Wendt.
+# Copyright (c) 2025 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Test downloading and plotting outlooks."""
@@ -65,7 +65,7 @@ def test_convective_outlook():
     cof = Day1ConvectiveOutlookFeature(1630, 2020, 4, 12, 'cat', zorder=3, linewidth=1.5)
     ax.add_feature(cof)
 
-    leg = spclegends.convectiveCategorical()
+    leg = spclegends.convective_categorical()
     lax = ax.legend(*leg, loc=3, ncol=2, framealpha=1, fontsize=8, edgecolor='black')
     lax.get_frame().set_linewidth(2)
 
@@ -123,7 +123,7 @@ def test_fire_outlook():
     ax.add_feature(windrh)
     ax.add_feature(dryt)
 
-    leg = spclegends.fireCategorical()
+    leg = spclegends.fire_categorical()
     lax = ax.legend(*leg, loc=3, ncol=2, framealpha=1, fontsize=6, edgecolor='black')
     lax.get_frame().set_linewidth(2)
 

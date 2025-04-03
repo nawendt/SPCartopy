@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Nathan Wendt.
+# Copyright (c) 2025 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Custom extensions to download and process SPC geoJSON files."""
@@ -10,10 +10,10 @@ from cartopy.io import Downloader
 from cartopy.io.shapereader import FionaReader, FionaRecord
 
 
-def SPCC(fday, ftime, year, month, day, hazard, product):
+def spc_convective(fday, ftime, year, month, day, hazard, product):
     """Return the path to the requested SPC Convective Outlook geoJSON."""
     outlook_downloader = Downloader.from_config(
-        ('geoJSON', 'Day{fday:1d}Outlook'.format(fday=fday),
+        ('geoJSON', f'Day{fday:1d}Outlook',
          fday, ftime, year, month, day, hazard, product)
     )
     format_dict = {'config': config, 'ftime': ftime, 'year': year,
@@ -23,10 +23,10 @@ def SPCC(fday, ftime, year, month, day, hazard, product):
     return outlook_downloader.path(format_dict)
 
 
-def SPCF(fday, ftime, year, month, day, hazard, product):
+def spc_fire(fday, ftime, year, month, day, hazard, product):
     """Return the path to the requested SPC Fire Outlook geoJSON."""
     outlook_downloader = Downloader.from_config(
-        ('geoJSON', 'Day{fday:1d}Fire'.format(fday=fday),
+        ('geoJSON', f'Day{fday:1d}Fire',
          fday, ftime, year, month, day, hazard, product)
     )
     format_dict = {'config': config, 'ftime': ftime, 'year': year,
@@ -108,10 +108,10 @@ class ConvectiveOutlookDownloader(Downloader):
 
         url = self.url(format_dict)
 
-        geoJSON_online = self._urlopen(url)
+        geojson_response = self._urlopen(url)
 
         with open(target_path, 'wb') as fh:
-            fh.write(geoJSON_online.read())
+            fh.write(geojson_response.read())
 
         return target_path
 
@@ -138,10 +138,10 @@ class FireOutlookDownloader(Downloader):
 
         url = self.url(format_dict)
 
-        geoJSON_online = self._urlopen(url)
+        geojson_response = self._urlopen(url)
 
         with open(target_path, 'wb') as fh:
-            fh.write(geoJSON_online.read())
+            fh.write(geojson_response.read())
 
         return target_path
 
