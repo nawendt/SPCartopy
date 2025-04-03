@@ -29,8 +29,6 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: mamba-org/setup-micromamba@v2
       with:
-        environment-file: false
-        environment-name: CI
         create-args: python=${{ matrix.python-version }}
         cache-environment: true
         cache-environment-key: mamba-${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('ci/*') }}
