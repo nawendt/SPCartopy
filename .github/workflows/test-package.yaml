@@ -17,6 +17,9 @@ concurrency:
 
 jobs:
   build:
+    defaults:
+        run:
+            shell: bash -leo pipefail {0}
     strategy:
       fail-fast: false
       matrix:
