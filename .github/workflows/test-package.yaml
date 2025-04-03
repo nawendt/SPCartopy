@@ -17,9 +17,6 @@ concurrency:
 
 jobs:
   build:
-    defaults:
-      run:
-        shell: bash -l {0}
     strategy:
       fail-fast: false
       matrix:
@@ -30,14 +27,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: mamba-org/provision-with-micromamba@main
+      uses: mamba-org/setup-micromamba@v2
       with:
         environment-file: false
         environment-name: CI
-        extra-specs: python=${{ matrix.python-version }}
-        channels: conda-forge
-        cache-env: true
-        cache-env-key: mamba-${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('ci/*') }}
+        create-args: python=${{ matrix.python-version }}
+        cache-environment: true
+        cache-environment-key: mamba-${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('ci/*') }}
     - name: Install dependencies
       run: micromamba install --quiet --yes --file ci/test_requirements.txt --file ci/requirements.txt
     - name: Install package
