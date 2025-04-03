@@ -32,9 +32,11 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: mamba-org/setup-micromamba@v2
       with:
+        environment-name: CI
         create-args: python=${{ matrix.python-version }}
         cache-environment: true
         cache-environment-key: mamba-${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('ci/*') }}
+        post-cleanup: 'all'
     - name: Install dependencies
       run: micromamba install --quiet --yes --file ci/test_requirements.txt --file ci/requirements.txt
     - name: Install package
