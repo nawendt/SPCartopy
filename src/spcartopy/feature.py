@@ -59,7 +59,8 @@ class ConvectiveOutlookFeature(Feature):
 
     def records(self):
         """Parse records from SPC geoJSONs."""
-        key = (self.ftime, self.year, self.month, self.day, self.hazard)
+        key = (self.product, self.fday, self.ftime, self.year, self.month, self.day,
+               self.hazard)
         if key not in _SPC_RECORD_CACHE:
             path = shapereader.spc_convective(fday=self.fday,
                                     ftime=self.ftime,
@@ -82,7 +83,8 @@ class ConvectiveOutlookFeature(Feature):
 
     def geometries(self):
         """Parse geometries from SPC convective geoJSONs."""
-        key = (self.ftime, self.year, self.month, self.day, self.hazard)
+        key = (self.product, self.fday, self.ftime, self.year, self.month, self.day,
+               self.hazard)
         if key not in _SPC_GEOM_CACHE:
             path = shapereader.spc_convective(fday=self.fday,
                                     ftime=self.ftime,
@@ -145,7 +147,8 @@ class FireOutlookFeature(Feature):
 
     def records(self):
         """Parse records from SPC fire geoJSONs."""
-        key = (self.ftime, self.year, self.month, self.day, self.hazard)
+        key = (self.product, self.fday, self.ftime, self.year, self.month, self.day,
+               self.hazard)
         if key not in _SPC_RECORD_CACHE:
             path = shapereader.spc_fire(fday=self.fday,
                                     ftime=self.ftime,
@@ -164,7 +167,8 @@ class FireOutlookFeature(Feature):
 
     def geometries(self):
         """Parse geometries from SPC fire geoJSONs."""
-        key = (self.ftime, self.year, self.month, self.day, self.hazard)
+        key = (self.product, self.fday, self.ftime, self.year, self.month, self.day,
+               self.hazard)
         if key not in _SPC_GEOM_CACHE:
             path = shapereader.spc_fire(fday=self.fday,
                                     ftime=self.ftime,
