@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Nathan Wendt.
+# Copyright (c) 2026 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Custom extensions to download and process SPC text files."""
@@ -14,9 +14,7 @@ from spcartopy.io.decode import mcd_to_geojson
 
 def spc_md(year, number):
     """Return the path to the requested SPC mesoscale discussion geoJSON."""
-    md_downloader = Downloader.from_config(
-        ('geoJSON', 'MD', year, number)
-    )
+    md_downloader = Downloader.from_config(('geoJSON', 'MD', year, number))
     format_dict = {'config': config, 'year': year, 'number': number}
 
     return md_downloader.path(format_dict)
@@ -27,15 +25,14 @@ class MDDownloader(Downloader):
 
     FORMAT_KEYS = ('config', 'year', 'number')
 
-    _SPC_URL_TEMPLATE = (
-        'https://www.spc.noaa.gov/products/md/{year:4d}/md{number:04d}.txt'
-    )
+    _SPC_URL_TEMPLATE = 'https://www.spc.noaa.gov/products/md/{year:4d}/md{number:04d}.txt'
 
-    def __init__(self,
-                 url_template=_SPC_URL_TEMPLATE,
-                 target_path_template=None,
-                 pre_downloaded_path_template='',
-                 ):
+    def __init__(
+        self,
+        url_template=_SPC_URL_TEMPLATE,
+        target_path_template=None,
+        pre_downloaded_path_template='',
+    ):
         super().__init__(url_template, target_path_template, pre_downloaded_path_template)
 
     def acquire_resource(self, target_path, format_dict):
@@ -55,15 +52,16 @@ class MDDownloader(Downloader):
     @staticmethod
     def default_downloader():
         """Return a generic, standard, MD downloader instance."""
-        default_spec = ('geoJSON', 'SPC', 'md', '{year:4d}',
-                        'md{number:04d}.geojson')
+        default_spec = ('geoJSON', 'SPC', 'md', '{year:4d}', 'md{number:04d}.geojson')
         md_path_template = str(Path('{config[data_dir]}').joinpath(*default_spec))
         pre_path_template = str(
             Path('{config[pre_existing_data_dir]}').joinpath(*default_spec)
         )
 
-        return MDDownloader(target_path_template=md_path_template,
-                            pre_downloaded_path_template=pre_path_template)
+        return MDDownloader(
+            target_path_template=md_path_template,
+            pre_downloaded_path_template=pre_path_template,
+        )
 
 
 _md_key = ('geoJSON', 'MD')

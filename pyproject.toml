@@ -1,50 +1,41 @@
 [project]
-name = 'SPCartopy'
-description = 'Add SPC products to cartopy maps.'
+name = "SPCartopy"
+description = "Add SPC products to cartopy maps."
 authors = [
-    {name = 'Nathan Wendt', email = 'nathan.wendt@noaa.gov'},
+    {name = "Nathan Wendt", email = "nathan.wendt@noaa.gov"},
 ]
-readme = 'README.md'
-license = {file = 'LICENSE'}
-dynamic = ['version']
-requires-python = '>=3.10'
+readme = "README.md"
+license = {file = "LICENSE"}
+dynamic = ["version"]
+requires-python = ">=3.11"
 dependencies = [
-    'cartopy >= 0.23',
-    'fiona',
-    'matplotlib',
-    'shapely >= 1.8'
+    "cartopy >= 0.23",
+    "fiona",
+    "matplotlib",
+    "shapely >= 1.8"
 ]
 
 [project.optional-dependencies]
 lint = [
-    'flake8',
-    'ruff',
-    'pycodestyle',
-    'pyflakes',
-    'flake8-continuation',
-    'flake8-copyright',
-    'flake8-isort',
-    'isort',
-    'flake8-requirements',
-    'pydocstyle'
+    "ruff",
 ]
 
 test = [
-    'pytest',
-    'pytest-mpl'
+    "pytest",
+    "pytest-mpl"
 ]
 
 [build-system]
-requires = ['setuptools']
+requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.urls]
-homepage = 'https://github.com/nawendt/SPCartopy'
-repository = 'https://github.com/nawendt/SPCartopy'
+homepage = "https://github.com/nawendt/SPCartopy"
+repository = "https://github.com/nawendt/SPCartopy"
 
 [tool.isort]
 line_length = 95
-known_first_party = ['spcartopy']
+known_first_party = ["spcartopy"]
 force_single_line = false
 reverse_relative = true
 use_parentheses = true
@@ -55,53 +46,53 @@ combine_as_imports = true
 combine_star = true
 
 [tool.pytest.ini_options]
-norecursedirs = 'build'
-mpl-results-path = 'test_output'
-mpl-default-style = 'default'
-mpl-default-backend = 'agg'
+norecursedirs = "build"
+mpl-results-path = "test_output"
+mpl-default-style = "default"
+mpl-default-backend = "agg"
 xfail_strict = false
 filterwarnings = [
     "error",
-    'ignore:hatch must consist of a string of',
+    "ignore:hatch must consist of a string of",
 ]
 
 [tool.ruff]
 line-length = 95
-extend-exclude = ['tutorials']
+extend-exclude = ["tutorials"]
+
+[tool.ruff.format]
+quote-style = "single"
 
 [tool.ruff.lint]
-select = ['A', 'B', 'C', 'CPY001', 'D', 'E', 'E226', 'F', 'G', 'I', 'N', 'NPY', 'Q', 'R', 'S', 'SIM', 'T', 'U', 'W']
-ignore = ['F405', 'I001', 'RET504', 'RET505', 'RET506', 'RET507', 'RUF100']
+select = ["A", "B", "C", "CPY001", "D", "E", "E226", "F", "G", "I", "N", "NPY", "PIE", "Q", "R", "S", "SIM", "T", "U", "W"]
+ignore = ["RET504", "RET505", "RET506", "RET507"]
 preview = true
 explicit-preview-rules = true
 
 [tool.ruff.lint.per-file-ignores]
-'src/spcartopy/__init__.py' = ['F401']
+"src/spcartist/mpl/patheffects.py" = ["N803"]
 
 [tool.ruff.lint.flake8-copyright]
 notice-rgx = '(?i)Copyright\s+(\(C\)\s+)?\d{4}'
-author = 'Nathan Wendt'
+author = "Nathan Wendt"
 
 [tool.ruff.lint.flake8-quotes]
-inline-quotes = 'single'
-multiline-quotes = 'double'
+inline-quotes = "single"
+multiline-quotes = "double"
 
 [tool.ruff.lint.isort]
-known-first-party = ['spcartopy']
+known-first-party = ["spcartist"]
 force-single-line = false
-relative-imports-order = 'closest-to-furthest'
+relative-imports-order = "closest-to-furthest"
 force-sort-within-sections = true
 order-by-type = false
 combine-as-imports = true
 
-[tool.ruff.lint.mccabe]
-max-complexity = 61
-
 [tool.ruff.lint.pydocstyle]
-convention = 'numpy'
+convention = "numpy"
 
 [tool.setuptools.dynamic]
-version = {attr = 'spcartopy.__version__'}
+version = {attr = "spcartopy.__version__"}
 
 [tool.setuptools.packages.find]
-where = ['src']
+where = ["src"]

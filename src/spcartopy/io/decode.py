@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Nathan Wendt.
+# Copyright (c) 2026 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Decoding tools."""
@@ -59,13 +59,11 @@ def mcd_to_geojson(mcd_text):
 
     md_feature = {
         'type': 'Feature',
-        'properties': {
-            'number': md_number
-        },
+        'properties': {'number': md_number},
         'geometry': {
             'type': 'Polygon',
             'coordinates': [coords_pts],
-        }
+        },
     }
 
     return {
