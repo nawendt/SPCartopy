@@ -102,3 +102,10 @@ ENV/
 
 # PyCharm
 .idea
+
+### VisualStudioCode ###
+.vscode/*
+**/.history
+
+# OSX
+.DS_Store

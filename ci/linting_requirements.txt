@@ -1,10 +1,1 @@
-flake8
 ruff
-pycodestyle
-pyflakes
-flake8-continuation
-flake8-copyright
-flake8-isort
-isort
-flake8-requirements
-pydocstyle

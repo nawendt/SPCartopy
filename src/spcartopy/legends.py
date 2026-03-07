@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Nathan Wendt.
+# Copyright (c) 2026 Nathan Wendt.
 # Distributed under the terms of the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 """Helper function for generating legends for SPC outlook plots."""
@@ -8,17 +8,20 @@ from matplotlib.patches import Rectangle
 from spcartopy.colors import Outlooks
 
 
-def convective_all_hazards():
+def convective_all_hazards(legacy_sig=False):
     """Legend for all hazards probabilistic outlook."""
     handles = []
     labels = []
     for _cat, props in Outlooks.hail.items():
-        if _cat == 'SIGN':
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc='none', hatch='SS'))
+        if _cat == 'SIGN' and not legacy_sig:
+            continue
+
+        if _cat in ['SIGN', 'CIG1']:
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch='SS'))
+        elif _cat == 'CIG2':
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch=r'\\'))
         else:
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc=props['fc']))
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
@@ -29,8 +32,7 @@ def convective_categorical():
     handles = []
     labels = []
     for _cat, props in Outlooks.categorical.items():
-        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                 fc=props['fc']))
+        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
@@ -41,56 +43,71 @@ def convective_extended():
     handles = []
     labels = []
     for _cat, props in Outlooks.extended_severe.items():
-        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                 fc=props['fc']))
+        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
 
 
-def convective_hail():
+def convective_hail(legacy_sig=False):
     """Legend for probabilistic hail outlook."""
     handles = []
     labels = []
     for _cat, props in Outlooks.hail.items():
-        if _cat == 'SIGN':
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc='none', hatch='SS'))
+        if _cat == 'SIGN' and not legacy_sig:
+            continue
+
+        if 'CIG' in _cat and legacy_sig:
+            continue
+
+        if _cat in ['SIGN', 'CIG1']:
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch='SS'))
+        elif _cat == 'CIG2':
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch=r'\\'))
         else:
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc=props['fc']))
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
 
 
-def convective_tornado():
+def convective_tornado(legacy_sig=False):
     """Legend for probabilistic tornado outlook."""
     handles = []
     labels = []
     for _cat, props in Outlooks.tornado.items():
-        if _cat == 'SIGN':
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc='none', hatch='SS'))
+        if _cat == 'SIGN' and not legacy_sig:
+            continue
+
+        if _cat in ['SIGN', 'CIG1']:
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch='SS'))
+        elif _cat == 'CIG2':
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch=r'\\'))
+        elif _cat == 'CIG3':
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch='xx'))
         else:
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc=props['fc']))
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
 
 
-def convective_wind():
+def convective_wind(legacy_sig=False):
     """Legend for probabilistic wind outlook."""
     handles = []
     labels = []
     for _cat, props in Outlooks.wind.items():
-        if _cat == 'SIGN':
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc='none', hatch='SS'))
+        if _cat == 'SIGN' and not legacy_sig:
+            continue
+
+        if _cat in ['SIGN', 'CIG1']:
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch='SS'))
+        elif _cat == 'CIG2':
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch=r'\\'))
+        elif _cat == 'CIG3':
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc='none', hatch='xx'))
         else:
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc=props['fc']))
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
@@ -102,11 +119,9 @@ def fire_categorical():
     labels = []
     for _cat, props in Outlooks.fire_weather_categorical.items():
         if _cat in ['IDRT', 'SDRT']:
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc=props['fc'], hatch='xx'))
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc'], hatch='xx'))
         else:
-            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                     fc=props['fc']))
+            handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
@@ -117,8 +132,7 @@ def extended_fire_categorical():
     handles = []
     labels = []
     for _cat, props in Outlooks.extended_fire_weather_categorical.items():
-        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                 fc=props['fc']))
+        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)
@@ -129,8 +143,7 @@ def extended_fire_probability():
     handles = []
     labels = []
     for _cat, props in Outlooks.extended_fire_weather_probability.items():
-        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'],
-                                 fc=props['fc']))
+        handles.append(Rectangle((0, 0), 3, 2, ec=props['ec'], fc=props['fc']))
         labels.append(props['label'])
 
     return (handles, labels)

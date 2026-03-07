@@ -1,4 +1,4 @@
-cartopy
+cartopy>=0.23
 fiona
 matplotlib
-shapely >= 1.8
+shapely>=1.8
